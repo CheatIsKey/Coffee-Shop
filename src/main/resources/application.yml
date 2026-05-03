@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}  # .env 또는 환경변수로 override 가능, 기본값 local
+  jpa:
+    open-in-view: false
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-validity-time: 3600000    # 1시간 (ms)
+  refresh-token-validity-time: 604800000 # 7일 (ms)
