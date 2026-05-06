@@ -18,8 +18,11 @@ public enum ErrorCode {
 
     // 사용자 관련 에러 코드 (U###)
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "U001", "이미 존재하는 이메일입니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U002", "해당 유저는 존재하지 않습니다.")
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U002", "해당 유저는 존재하지 않습니다."),
+    INSUFFICIENT_POINT(HttpStatus.BAD_REQUEST, "U003", "잔여 포인트가 부족합니다."),
 
+    // 메뉴 관련 에러 코드 (M###)
+    MENU_OUT_OF_STOCK(HttpStatus.CONFLICT, "M001", "재고가 부족합니다.")
     ;
 
 

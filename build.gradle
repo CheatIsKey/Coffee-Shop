@@ -65,6 +65,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // === 모니터링 ===
+    // Health Check
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // 프로메테우스
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
