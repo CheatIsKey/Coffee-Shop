@@ -11,3 +11,16 @@ jwt:
   secret-key: ${JWT_SECRET_KEY}
   access-token-validity-time: 3600000    # 1시간 (ms)
   refresh-token-validity-time: 604800000 # 7일 (ms)
+
+# 모니터링
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name:my-app}

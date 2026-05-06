@@ -1,6 +1,9 @@
 package jpa.basic.coffeeshop.domain.user.entity;
 
 import jakarta.persistence.*;
+import jpa.basic.coffeeshop.common.exception.CustomException;
+import jpa.basic.coffeeshop.common.exception.ErrorCode;
+import jpa.basic.coffeeshop.domain.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,6 +46,26 @@ public class User {
 
     // 포인트 충전
     public void chargePoint(long point) {
-        this.point = point;
+        validPoint(point);
+        this.point += point;
+    }
+
+    // 포인트 차감
+    public void spendPoint(long point) {
+        validPoint(point);
+        verifyPoint(point);
+        this.point -= point;
+    }
+
+    private void validPoint(long point) {
+        if (point <= 0) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+    }
+
+    private void verifyPoint(long needPoint) {
+        if (this.point < needPoint) {
+            throw new CustomException(ErrorCode.INSUFFICIENT_POINT);
+        }
     }
 }
