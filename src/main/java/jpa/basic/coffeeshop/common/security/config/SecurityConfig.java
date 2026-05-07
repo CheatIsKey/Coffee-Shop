@@ -44,6 +44,8 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET,
                         "/api/auth/check-duplicate",
+                        "/api/menus",
+                        "/api/menus/**",
                         "/api/products",
                         "/api/products/{productId}",
                         "/api/keywords/v1/top5",
@@ -56,6 +58,9 @@ public class SecurityConfig {
                         "/api/events/**",
                         "/ws/**", "/ws-chat/**"
                 ).permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/menus").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/menus/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/menus/**").hasAuthority("ADMIN")
                 .requestMatchers(
                         "/api/chat/admin/**"
                 ).hasAuthority("ADMIN")

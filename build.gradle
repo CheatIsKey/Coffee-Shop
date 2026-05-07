@@ -72,6 +72,12 @@ dependencies {
 
     // 프로메테우스
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // TSID
+    implementation 'com.github.f4b6a3:tsid-creator:5.2.6'
+
+    // AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 tasks.named('test') {

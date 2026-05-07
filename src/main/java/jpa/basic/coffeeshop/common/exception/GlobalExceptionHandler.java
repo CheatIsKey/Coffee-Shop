@@ -3,7 +3,7 @@ package jpa.basic.coffeeshop.common.exception;
 import jpa.basic.coffeeshop.common.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,11 +23,17 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(errorCode));
     }
 
-    // @Valid 검증 실패 처리 — DTO에 @Valid 적용 시 검증 실패하면 자동 발생
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<ErrorResponse>> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException exception) {
-
+    /**
+     * 검증 실패 통합 처리
+     *
+     * MethodArgumentNotValidException (@RequestBody @Valid 실패)과
+     * BindException (@ModelAttribute @Valid 실패) 을 모두 처리
+     *
+     * MethodArgumentNotValidException은 BindException의 하위 클래스이므로
+     * 부모 타입으로 통합 핸들링이 가능
+     */
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiResponse<ErrorResponse>> handleMethodArgumentNotValid(BindException exception) {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
         List<FieldError> fieldErrors = exception.getBindingResult()
                 .getFieldErrors()
