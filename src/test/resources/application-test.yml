@@ -1,0 +1,12 @@
+# 테스트 전용 환경변수 설정
+# .env 파일을 읽지 않는 테스트 컨텍스트에서 필요한 값을 직접 주입한다.
+JWT_SECRET_KEY: 6yErZZmbxTIhO2J1NAisjkdf9Y2YR/1cj2bud2WnZRo=
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: coffeeshop-test-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

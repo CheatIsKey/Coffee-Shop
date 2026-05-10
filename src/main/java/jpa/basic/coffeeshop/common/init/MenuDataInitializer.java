@@ -6,7 +6,6 @@ import jpa.basic.coffeeshop.domain.menu.entity.Menu;
 import jpa.basic.coffeeshop.domain.menu.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +20,6 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@Profile("local")
 @RequiredArgsConstructor
 public class MenuDataInitializer {
 
