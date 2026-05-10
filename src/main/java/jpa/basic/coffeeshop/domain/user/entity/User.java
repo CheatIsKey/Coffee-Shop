@@ -44,6 +44,11 @@ public class User extends BaseEntity {
         this.password = encodedPassword;
     }
 
+    // 관리자 권한 부여
+    public void grantAdminRole() {
+        this.role = UserRole.ADMIN;
+    }
+
     // 포인트 충전
     public void chargePoint(long point) {
         validPoint(point);

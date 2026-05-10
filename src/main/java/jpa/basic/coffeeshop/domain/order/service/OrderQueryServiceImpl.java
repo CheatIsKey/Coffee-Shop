@@ -62,10 +62,16 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         Map<Long, String> emailMap = userQueryService.getAllById(userIds).stream()
                 .collect(Collectors.toMap(User::getId, User::getEmail));
 
-        return orderPage.map(order -> {
-            List<OrderMenu> menus = orderMenuRepository.findAllByOrderId(order.getId());
-            return OrderListItemResponse.of(order, emailMap.getOrDefault(order.getUserId(), ""), menus);
-        });
+        List<Long> orderIds = orderPage.getContent().stream()
+                .map(Order::getId).toList();
+        Map<Long, List<OrderMenu>> menuMap = orderMenuRepository.findAllByOrderIdIn(orderIds).stream()
+                .collect(Collectors.groupingBy(OrderMenu::getOrderId));
+
+        return orderPage.map(order -> OrderListItemResponse.of(
+                order,
+                emailMap.getOrDefault(order.getUserId(), ""),
+                menuMap.getOrDefault(order.getId(), List.of())
+        ));
     }
 
     /**
@@ -86,10 +92,21 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     }
 
     private List<OrderListItemResponse> toListResponse(List<Order> orders, String email) {
+        if (orders.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> orderIds = orders.stream().map(Order::getId).toList();
+        Map<Long, List<OrderMenu>> menuMap = orderMenuRepository.findAllByOrderIdIn(orderIds).stream()
+                .collect(Collectors.groupingBy(OrderMenu::getOrderId));
+
         return orders.stream()
-                .map(order -> {
-                    List<OrderMenu> menus = orderMenuRepository.findAllByOrderId(order.getId());
-                    return OrderListItemResponse.of(order, email, menus);
-                }).toList();
+                .map(order ->
+                    OrderListItemResponse.of(
+                            order,
+                            email,
+                            menuMap.getOrDefault(order.getId(), List.of())
+                    ))
+                .toList();
     }
 }
