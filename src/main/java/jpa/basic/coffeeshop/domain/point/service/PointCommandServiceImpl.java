@@ -1,5 +1,6 @@
 package jpa.basic.coffeeshop.domain.point.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import jpa.basic.coffeeshop.common.exception.CustomException;
 import jpa.basic.coffeeshop.common.exception.ErrorCode;
 import jpa.basic.coffeeshop.common.util.TsidHolder;
@@ -31,6 +32,8 @@ public class PointCommandServiceImpl implements PointCommandService {
     private final PointChargeRepository pointChargeRepository;
     private final PointLogRepository pointLogRepository;
     private final TsidHolder tsidHolder;
+
+    private final MeterRegistry meterRegistry;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -77,6 +80,10 @@ public class PointCommandServiceImpl implements PointCommandService {
                 .build();
 
         pointLogRepository.save(pointLog);
+
+        meterRegistry.counter("coffeeshop.point.charged.total").increment();
+        meterRegistry.counter("coffeeshop.point.charged.amount.total")
+                .increment(request.amount().doubleValue());
 
         log.info("[PointCharge] 포인트 충전 완료 - userId: {}, amount: {}, remainPoint: {}, pgTid: {}",
                 userId, request.amount(), user.getPoint(), pgTid);

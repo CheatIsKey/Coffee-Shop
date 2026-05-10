@@ -2,6 +2,9 @@ package jpa.basic.coffeeshop.domain.menu.service;
 
 import jpa.basic.coffeeshop.domain.menu.dto.response.MenuDetailResponse;
 import jpa.basic.coffeeshop.domain.menu.dto.response.MenuPageResponse;
+import jpa.basic.coffeeshop.domain.menu.entity.Menu;
+
+import java.util.List;
 
 public interface MenuQueryService {
 
@@ -22,4 +25,6 @@ public interface MenuQueryService {
      * @return          : 메뉴 상세 응답 DTO
      */
     MenuDetailResponse getMenuById(Long menuId);
+
+    List<Menu> getAllMenusById(List<Long> menuIds);
 }
