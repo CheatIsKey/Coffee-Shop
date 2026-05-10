@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,8 +33,14 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
+    @Transactional
     public User getByIdWithLock(Long userId) {
         return userRepository.findByIdWithLock(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public List<User> getAllById(List<Long> userIds) {
+        return userRepository.findAllById(userIds);
     }
 }

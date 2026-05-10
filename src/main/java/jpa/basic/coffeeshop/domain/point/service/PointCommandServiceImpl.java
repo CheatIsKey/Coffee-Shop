@@ -84,6 +84,18 @@ public class PointCommandServiceImpl implements PointCommandService {
         return ChargePointResponse.of(savedCharge, user.getPoint());
     }
 
+    @Override
+    public void recordOrderUsage(Long userId, Long orderId, Long amount, Long remainPoint) {
+        pointLogRepository.save(PointLog.builder()
+                .type(PointLogType.USE)
+                .amount(amount)
+                .remainPoint(remainPoint)
+                .userId(userId)
+                .orderId(orderId)
+                .chargeId(null)
+                .build());
+    }
+
     private String generatePgTid() {
         return "TID_" + LocalDate.now().format(DATE_FORMATTER) + "_" + tsidHolder.generate();
     }

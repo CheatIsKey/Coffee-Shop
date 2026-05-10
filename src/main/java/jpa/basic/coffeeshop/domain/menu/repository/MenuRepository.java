@@ -1,8 +1,14 @@
 package jpa.basic.coffeeshop.domain.menu.repository;
 
+import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.persistence.LockModeType;
 import jpa.basic.coffeeshop.domain.menu.entity.Category;
 import jpa.basic.coffeeshop.domain.menu.entity.Menu;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
@@ -23,5 +29,16 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             String menuName, Category category, Long id
     );
 
-
+    /**
+     * 재고 차감 시 비관적 락으로 메뉴 조회
+     * 다수의 사용자가 동시에 동일 메뉴를 주문할 때 재고 정합성을 보장
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+           SELECT m
+           FROM Menu m
+           WHERE m.id = :id
+           AND m.isDeleted = false
+           """)
+    Optional<Menu> findByIdWithLock(@Param("id") Long id);
 }
