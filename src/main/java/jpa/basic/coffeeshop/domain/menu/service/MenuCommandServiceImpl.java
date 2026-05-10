@@ -4,9 +4,11 @@ import jpa.basic.coffeeshop.common.exception.CustomException;
 import jpa.basic.coffeeshop.common.exception.ErrorCode;
 import jpa.basic.coffeeshop.domain.menu.dto.request.CreateMenuRequest;
 import jpa.basic.coffeeshop.domain.menu.entity.Menu;
+import jpa.basic.coffeeshop.domain.menu.entity.MenuStockLog;
 import jpa.basic.coffeeshop.domain.menu.entity.UpdateMenuRequest;
 import jpa.basic.coffeeshop.domain.menu.repository.MenuQueryRepository;
 import jpa.basic.coffeeshop.domain.menu.repository.MenuRepository;
+import jpa.basic.coffeeshop.domain.menu.repository.MenuStockLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -25,6 +27,7 @@ public class MenuCommandServiceImpl implements MenuCommandService {
 
     private final MenuRepository menuRepository;
     private final MenuQueryRepository menuQueryRepository;
+    private final MenuStockLogRepository menuStockLogRepository;
 
     /**
      * 메뉴 생성
@@ -103,5 +106,32 @@ public class MenuCommandServiceImpl implements MenuCommandService {
 
         menu.softDelete();
         log.info("[MenuDelete] 메뉴 소프트 삭제 완료 - menuId: {}", menuId);
+    }
+
+    /**
+     * 재고 차감 + MenuStockLog 기록
+     *
+     * 비관적 락으로 메뉴를 조회하므로 동시 주문 시 재고 정합성 보장
+     */
+    @Override
+    public Menu decreaseStockWithLog(Long menuId, int quantity, Long orderId) {
+        Menu menu = menuRepository.findByIdWithLock(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
+
+        menu.decreaseStock(quantity);
+
+        MenuStockLog stockLog = MenuStockLog.builder()
+                .menuId(menuId)
+                .orderId(orderId)
+                .changeStock(-quantity)
+                .remainStock(menu.getMenuStock())
+                .build();
+
+        menuStockLogRepository.save(stockLog);
+
+        log.info("[재고 차감] menuId: {}, quantity: -{}, remain: {}",
+                            menuId, quantity, menu.getMenuStock());
+
+        return menu;
     }
 }

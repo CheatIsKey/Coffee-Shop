@@ -18,6 +18,22 @@ spring:
         format_sql: true
         show_sql: false
     defer-datasource-initialization: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all       # 모든 ISR이 ack 응답해야 발행 성공으로 간주
+      retries: 3
+      properties:
+        enable.idempotence: true  # 중복 발행 방지 (PID + Sequence 기반)
+    consumer:
+      group-id: coffeeshop-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "jpa.basic.coffeeshop.*"
 
 logging:
   level:

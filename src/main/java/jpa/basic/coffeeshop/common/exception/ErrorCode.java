@@ -33,7 +33,11 @@ public enum ErrorCode {
     MENU_OPTIMISTIC_LOCK_CONFLICT(HttpStatus.CONFLICT, "M004", "다른 관리자가 수정 중입니다. 잠시 후 다시 시도해주세요."),
 
     // 주문 관련 에러 코드 (O###) ──────────────────────────────────
-    ORDER_STATUS_NOT_PENDING(HttpStatus.BAD_REQUEST, "O001", "주문 상태가 주문 대기 상태가 아닙니다.")
+    ORDER_STATUS_NOT_PENDING(HttpStatus.BAD_REQUEST, "O001", "주문 상태가 주문 대기 상태가 아닙니다."),
+    ORDER_NOT_FOUND       (HttpStatus.NOT_FOUND,  "O002", "존재하지 않는 주문입니다."),
+    ORDER_ALREADY_EXISTS  (HttpStatus.CONFLICT,   "O003", "이미 등록된 주문입니다."),
+    ORDER_ALREADY_DELETED (HttpStatus.CONFLICT,   "O004", "이미 삭제된 주문입니다."),
+    ORDER_ACCESS_DENIED   (HttpStatus.FORBIDDEN,  "O005", "본인 주문만 접근할 수 있습니다.")
 
     ;
 

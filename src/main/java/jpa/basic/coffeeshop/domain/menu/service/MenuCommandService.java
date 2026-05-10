@@ -1,6 +1,7 @@
 package jpa.basic.coffeeshop.domain.menu.service;
 
 import jpa.basic.coffeeshop.domain.menu.dto.request.CreateMenuRequest;
+import jpa.basic.coffeeshop.domain.menu.entity.Menu;
 import jpa.basic.coffeeshop.domain.menu.entity.UpdateMenuRequest;
 
 public interface MenuCommandService {
@@ -25,4 +26,10 @@ public interface MenuCommandService {
      *  - 관리자만 호출 가능
      */
     void deleteMenu(Long menuId);
+
+    /**
+     * 재고를 비관적 락으로 차감하고 MenuStockLog를 기록
+     * Order 도메인에서 주문 생성 시 호출
+     */
+    Menu decreaseStockWithLog(Long menuId, int quantity, Long orderId);
 }

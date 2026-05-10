@@ -61,6 +61,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/menus").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/menus/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/menus/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/orders/admin").hasAuthority("ADMIN")
                 .requestMatchers(
                         "/api/chat/admin/**"
                 ).hasAuthority("ADMIN")

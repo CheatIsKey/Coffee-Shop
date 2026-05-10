@@ -24,3 +24,8 @@ management:
         http.server.requests: true
     tags:
       application: ${spring.application.name:my-app}
+
+# Kafka
+kafka:
+  topic:
+    order-created: order.created
