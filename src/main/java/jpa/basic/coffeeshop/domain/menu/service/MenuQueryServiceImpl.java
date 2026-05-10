@@ -6,11 +6,14 @@ import jpa.basic.coffeeshop.domain.menu.dto.response.MenuDetailResponse;
 import jpa.basic.coffeeshop.domain.menu.dto.response.MenuPageResponse;
 import jpa.basic.coffeeshop.domain.menu.entity.Menu;
 import jpa.basic.coffeeshop.domain.menu.repository.MenuQueryRepository;
+import jpa.basic.coffeeshop.domain.menu.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MenuQueryServiceImpl implements MenuQueryService {
 
     private final MenuQueryRepository menuQueryRepository;
+    private final MenuRepository menuRepository;
 
     /**
      * 삭제되지 않은 메뉴 목록을 Offset 페이징으로 조회
@@ -43,5 +47,10 @@ public class MenuQueryServiceImpl implements MenuQueryService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
 
         return MenuDetailResponse.from(menu);
+    }
+
+    @Override
+    public List<Menu> getAllMenusById(List<Long> menuIds) {
+        return menuRepository.findAllById(menuIds);
     }
 }

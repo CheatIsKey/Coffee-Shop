@@ -2,6 +2,7 @@ package jpa.basic.coffeeshop.domain.order.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.MeterRegistry;
 import jpa.basic.coffeeshop.common.exception.CustomException;
 import jpa.basic.coffeeshop.common.exception.ErrorCode;
 import jpa.basic.coffeeshop.common.util.TsidHolder;
@@ -27,6 +28,7 @@ import jpa.basic.coffeeshop.domain.user.entity.User;
 import jpa.basic.coffeeshop.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +66,8 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     private final MenuCommandService menuCommandService;
     private final PointLogRepository pointLogRepository;
 
+    private final MeterRegistry meterRegistry;
+
     /**
      * 주문 생성 + 결제 처리
      *
@@ -81,7 +85,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
         User user = userQueryService.getByIdWithLock(userId);
 
         String orderUid = generateOrderUid();
-        String orderFingerprint = generateFingerprint(request.items());
+        String orderFingerprint = generateFingerprint(request.items(), userId);
 
         Order order = Order.builder()
                 .orderUid(orderUid)
@@ -91,7 +95,14 @@ public class OrderCommandServiceImpl implements OrderCommandService {
                 .orderFingerprint(orderFingerprint)
                 .build();
 
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder;
+        try {
+            savedOrder = orderRepository.save(order);
+            orderRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            log.warn("[OrderCreate] 중복 주문 감지 - userId: {}, fingerprint: {}", userId, orderFingerprint);
+            throw new CustomException(ErrorCode.ORDER_ALREADY_EXISTS);
+        }
 
         List<OrderMenu> orderMenus = new ArrayList<>();
         long totalAmount = 0L;
@@ -140,6 +151,8 @@ public class OrderCommandServiceImpl implements OrderCommandService {
                 }
         );
 
+        meterRegistry.counter("coffeeshop.order.created.total").increment();
+
         log.info("[OrderCreate] 완료 - orderUid: {}, userId: {}, totalAmount: {}",
                 orderUid, userId, totalAmount);
 
@@ -179,11 +192,19 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
     /**
      * 주문 멱등성 키(fingerprint) 생성
-     * 요청 메뉴 항목을 menuId 오름차순으로 정렬 후 "menuId:quantity" 형태로 연결하여
-     * SHA-256 해시 메뉴 요청 순서가 달라도 동일한 fingerprint가 생성된다.
+     *
+     * 구성: userId + 30초 단위 시간 윈도우 + 정렬된 "menuId:quantity" 조합
+     *
+     * 30초 윈도우를 포함하면 30초 내 동일 요청만 차단하고
+     * 30초 이후 의도적 재주문은 다른 fingerprint로 인식하여 정상 처리한다.
+     *
+     * Redis 분산 락(5초)이 1차로 동시 요청을 차단하므로, fingerprint는 2차 방어다.
      */
-    private String generateFingerprint(List<OrderItemRequest> items) {
-        String raw = items.stream()
+    private String generateFingerprint(List<OrderItemRequest> items, Long userId) {
+        long timeWindow = System.currentTimeMillis() / 30_000;  // 30초마다 값이 바뀜
+
+        String raw = userId + ":" + timeWindow + ":" +
+                items.stream()
                 .sorted(Comparator.comparingLong(OrderItemRequest::menuId))
                 .map(i -> i.menuId() + ":" + i.quantity())
                 .collect(Collectors.joining(","));
