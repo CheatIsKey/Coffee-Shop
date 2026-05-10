@@ -18,16 +18,30 @@ import java.util.List;
  * @Profile("local"): 로컬 환경에서만 동작
  * 멱등성 보장: 메뉴가 이미 1건 이상 존재하면 초기화를 스킵하여 중복 등록을 방지
  */
+import org.springframework.security.crypto.password.PasswordEncoder;
+import jpa.basic.coffeeshop.domain.user.entity.User;
+import jpa.basic.coffeeshop.domain.user.repository.UserRepository;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class MenuDataInitializer {
 
     private final MenuRepository menuRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     @Transactional
     public void init() {
+        if (userRepository.findByEmail("admin@admin.com").isEmpty()) {
+            User admin = User.createUser("admin@admin.com", passwordEncoder.encode("qwerqwer"));
+            admin.grantAdminRole();
+            admin.chargePoint(9999999L);
+            userRepository.save(admin);
+            log.info("[MenuDataInitializer] 관리자(admin) 계정 등록 완료");
+        }
+
         if (menuRepository.count() > 0) {
             log.info("[MenuDataInitializer] 메뉴 데이터가 이미 존재합니다. 초기화를 건너뜁니다.");
             return;

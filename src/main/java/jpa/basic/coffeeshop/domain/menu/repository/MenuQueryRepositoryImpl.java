@@ -1,9 +1,8 @@
-package jpa.basic.coffeeshop.domain.menu.service;
+package jpa.basic.coffeeshop.domain.menu.repository;
 
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jpa.basic.coffeeshop.domain.menu.entity.Menu;
-import jpa.basic.coffeeshop.domain.menu.repository.MenuQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

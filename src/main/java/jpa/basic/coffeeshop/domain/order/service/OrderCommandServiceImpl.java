@@ -20,9 +20,6 @@ import jpa.basic.coffeeshop.domain.order.kafka.OrderEventProducer;
 import jpa.basic.coffeeshop.domain.order.repository.OrderMenuRepository;
 import jpa.basic.coffeeshop.domain.order.repository.OrderRepository;
 import jpa.basic.coffeeshop.domain.order.repository.OutboxEventRepository;
-import jpa.basic.coffeeshop.domain.point.entity.PointLog;
-import jpa.basic.coffeeshop.domain.point.entity.PointLogType;
-import jpa.basic.coffeeshop.domain.point.repository.PointLogRepository;
 import jpa.basic.coffeeshop.domain.point.service.PointCommandService;
 import jpa.basic.coffeeshop.domain.user.entity.User;
 import jpa.basic.coffeeshop.domain.user.service.UserQueryService;
@@ -64,7 +61,6 @@ public class OrderCommandServiceImpl implements OrderCommandService {
     private static final DateTimeFormatter DATE_FORMATTER
             = DateTimeFormatter.ofPattern("yyyyMMdd");
     private final MenuCommandService menuCommandService;
-    private final PointLogRepository pointLogRepository;
 
     private final MeterRegistry meterRegistry;
 
