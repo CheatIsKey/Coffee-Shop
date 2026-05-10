@@ -22,4 +22,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     boolean existsByMenuNameAndCategoryAndIsDeletedFalseAndIdNot(
             String menuName, Category category, Long id
     );
+
+
 }

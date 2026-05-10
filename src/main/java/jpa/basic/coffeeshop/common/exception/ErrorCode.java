@@ -24,12 +24,17 @@ public enum ErrorCode {
 
     // 포인트 관련 에러 코드 (P###) ──────────────────────────────────
     INVALID_AMOUNT(HttpStatus.BAD_REQUEST, "P001", "충전 금액은 1 이상이어야 합니다."),
+    POINT_STATUS_NOT_PENDING(HttpStatus.BAD_REQUEST, "P002", "충전 상태가 결제 대기 상태가 아닙니다."),
 
     // 메뉴 관련 에러 코드 (M###) ──────────────────────────────────
     MENU_OUT_OF_STOCK(HttpStatus.CONFLICT, "M001", "재고가 부족합니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M002", "존재하지 않는 메뉴입니다."),
     MENU_ALREADY_EXISTS(HttpStatus.CONFLICT, "M003", "이미 존재하는 메뉴입니다."),
-    MENU_OPTIMISTIC_LOCK_CONFLICT(HttpStatus.CONFLICT, "M004", "다른 관리자가 수정 중입니다. 잠시 후 다시 시도해주세요.")
+    MENU_OPTIMISTIC_LOCK_CONFLICT(HttpStatus.CONFLICT, "M004", "다른 관리자가 수정 중입니다. 잠시 후 다시 시도해주세요."),
+
+    // 주문 관련 에러 코드 (O###) ──────────────────────────────────
+    ORDER_STATUS_NOT_PENDING(HttpStatus.BAD_REQUEST, "O001", "주문 상태가 주문 대기 상태가 아닙니다.")
+
     ;
 
 

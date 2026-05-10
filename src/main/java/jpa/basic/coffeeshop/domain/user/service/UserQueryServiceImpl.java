@@ -30,4 +30,10 @@ public class UserQueryServiceImpl implements UserQueryService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
+
+    @Override
+    public User getByIdWithLock(Long userId) {
+        return userRepository.findByIdWithLock(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
 }

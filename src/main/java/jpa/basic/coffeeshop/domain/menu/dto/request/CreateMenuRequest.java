@@ -13,9 +13,11 @@ public record CreateMenuRequest(
         @NotBlank(message = "메뉴 이름은 필수입니다.")
         String menuName,
 
+        @NotNull(message = "메뉴 가격은 필수입니다.")
         @Positive(message = "메뉴 가격은 양수여야 합니다.")
         int menuPrice,
 
+        @NotNull(message = "메뉴 재고는 필수입니다.")
         @Positive(message = "메뉴 재고는 양수여야 합니다.")
         int menuStock,
 

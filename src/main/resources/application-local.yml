@@ -2,7 +2,7 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;MODE=MySQL
+    url: jdbc:h2:file:~/testdb;MODE=MySQL;AUTO_SERVER=TRUE
     username: sa
     password:
   h2:

@@ -8,4 +8,7 @@ public interface UserQueryService {
     Optional<User> getByEmail(String email);
 
     User getById(Long userId);
+
+    // 포인트 충전에서 사용하기 위한 비관적 락
+    User getByIdWithLock(Long userId);
 }
