@@ -24,7 +24,7 @@ export const options = {
     },
 };
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://coffeeshop-alb-1667448264.ap-northeast-2.elb.amazonaws.com';
 
 // 공통 헤더 (로그인 토큰이 필요한 경우 아래에 추가)
 const headers = {

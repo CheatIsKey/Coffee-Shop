@@ -24,7 +24,7 @@ export const options = {
     },
 };
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://coffeeshop-alb-1667448264.ap-northeast-2.elb.amazonaws.com';
 
 export default function () {
     const res = http.get(`${BASE_URL}/api/menus/popular`);
